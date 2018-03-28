@@ -59,13 +59,12 @@ def get_file_list(Host,User,Pass,Path):
 
 def list_to_file(File, List):
         fp = open(File, 'w')
-        json.dump(List, fp)
+        for item in List:
+                fp.write(item + '\n')
         fp.close()
         
 
 sessions = load_config()
-config_file.close()
-
 Time_start = datetime.datetime.now()
 for key in sessions:
         Host = sessions[key]['Host']
@@ -76,11 +75,11 @@ for key in sessions:
         Data_local = sessions[key]['Data_local']
         Dir_RE = (datetime.datetime.now() + datetime.timedelta(hours = -sessions[key]['Hour'])).strftime(Data_local)
         Dir_local = '/'.join(Dir_RE.split('/')[:-1]) + '/' + sessions[key]['Hostname'] + '/' + Dir_RE.split('/')[-1] + '/'
+        Dir_local_log_base = '/'.join(Dir_RE.split('/')[:-1]) + '/log/'
         Dir_local = check_local_dir(Dir_local)
-        Dir_local_log = Dir_local + 'log/'
-        Dir_local_log = check_local_dir(Dir_local_log)
-        log_remote_file = Dir_local_log + Head[:-1] + '_remote.log'
-        log_received_file = Dir_local_log + Head[:-1] + '_received.log'
+        Dir_local_log_base = check_local_dir(Dir_local_log_base)
+        log_remote_file = Dir_local_log_base + sessions[key]['Hostname'] + '_' + Head[:-1] + '_remote.log'
+        log_received_file = Dir_local_log_base + sessions[key]['Hostname'] + '_' + Head[:-1] + '_received.log'
         Received_file_list = []
         File_list = get_file_list(Host,User,Pass,Path_RE)
         list_to_file(log_remote_file, File_list)
