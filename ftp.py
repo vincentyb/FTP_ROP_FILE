@@ -49,6 +49,7 @@ def get_file(Host,User,Pass,Dir_local,File_list,Received_file_list):
                 Received_file_list.append(File_local)
                 fp.close()
         session.quit()
+        return Received_file_list
 
 def get_file_list(Host,User,Pass,Path):
         session = ftplib.FTP(Host)
@@ -65,6 +66,7 @@ def list_to_file(File, List):
         
 
 sessions = load_config()
+
 Time_start = datetime.datetime.now()
 for key in sessions:
         Host = sessions[key]['Host']
@@ -83,8 +85,15 @@ for key in sessions:
         Received_file_list = []
         File_list = get_file_list(Host,User,Pass,Path_RE)
         list_to_file(log_remote_file, File_list)
-        get_file(Host,User,Pass,Dir_local,File_list,Received_file_list)
+        Received_file_list = get_file(Host,User,Pass,Dir_local,File_list,Received_file_list)
         list_to_file(log_received_file, Received_file_list)
+        if len(File_list) == len(Received_file_list):
+                print "Received %s files at %s on server %s" %(len(Received_file_list), Dir_local, sessions[key]['Hostname'])
+                print "All files are received!"
+        else:
+                print "Received %s files at %s on server %s" %(len(Received_file_list), Dir_local, sessions[key]['Hostname'])
+                print "Should Received  %s files" %(len(File_list))
+                print "%d files not received" %(len(Received_file_list) - len(Received_file_list))
 '''
         session = ftplib.FTP(Host)
         session.login(User,Pass)
