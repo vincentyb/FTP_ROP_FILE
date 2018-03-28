@@ -7,10 +7,12 @@ import os
 import threading
 
 
-config_file = open('./config_json', 'r')
-config = json.load(config_file)
+
 
 def load_config():
+        config_file = open('./config_json', 'r')
+        config = json.load(config_file)
+        config_file.close()
         sessions = {}
         i = 0
         for session in config['session']:
@@ -33,7 +35,8 @@ def check_local_dir(dir):
                 os.makedirs(dir)
                 return dir
 
-def get_file(Host,User,Pass,Dir_local,File_list):
+def get_file(Host,User,Pass,Dir_local,File_list,Received_file_list):
+        Received_file_list = []
         session = ftplib.FTP(Host)
         session.login(User,Pass)
         for item in File_list:
@@ -43,6 +46,7 @@ def get_file(Host,User,Pass,Dir_local,File_list):
                 File_local = Dir_local + File
                 fp = open(File_local, 'wb')
                 session.retrbinary('retr %s' %File,fp.write,1024)
+                Received_file_list.append(File_local)
                 fp.close()
         session.quit()
 
@@ -53,6 +57,11 @@ def get_file_list(Host,User,Pass,Path):
         session.quit()
         return L
 
+def list_to_file(File, List):
+        fp = open(File, 'w')
+        json.dump(List, fp)
+        fp.close()
+        
 
 sessions = load_config()
 config_file.close()
@@ -68,9 +77,15 @@ for key in sessions:
         Dir_RE = (datetime.datetime.now() + datetime.timedelta(hours = -sessions[key]['Hour'])).strftime(Data_local)
         Dir_local = '/'.join(Dir_RE.split('/')[:-1]) + '/' + sessions[key]['Hostname'] + '/' + Dir_RE.split('/')[-1] + '/'
         Dir_local = check_local_dir(Dir_local)
-        print Dir_local
+        Dir_local_log = Dir_local + 'log/'
+        Dir_local_log = check_local_dir(Dir_local_log)
+        log_remote_file = Dir_local_log + Head[:-1] + '_remote.log'
+        log_received_file = Dir_local_log + Head[:-1] + '_received.log'
+        Received_file_list = []
         File_list = get_file_list(Host,User,Pass,Path_RE)
-        get_file(Host,User,Pass,Dir_local,File_list)
+        list_to_file(log_remote_file, File_list)
+        get_file(Host,User,Pass,Dir_local,File_list,Received_file_list)
+        list_to_file(log_received_file, Received_file_list)
 '''
         session = ftplib.FTP(Host)
         session.login(User,Pass)
