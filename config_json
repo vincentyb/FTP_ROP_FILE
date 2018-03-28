@@ -1,0 +1,23 @@
+{
+        "session": [{
+                        "Host": "xxx.xxx.xxx.xxx",
+                        "User": "your_username",
+                        "Pass": "your_password",
+                        "Data_dir": ["Remote_server_data_dir_base", "sub_dir_1", "sub_dir2*"],
+                        "Hour": 2,
+                        "RE": "A%Y%m%d.%H00*",
+                        "Data_local": "PM/%Y%m%d-%H",
+                        "Hostname": "Server_name"
+                },
+                {
+                        "Host": "xxx.xxx.xxx.xxx",
+                        "User": "your_username",
+                        "Pass": "your_password",
+                        "Data_dir": ["Remote_server_data_dir_base", "sub_dir_1", "sub_dir2*"],
+                        "Hour": 2,
+                        "RE": "A%Y%m%d.%H00*",
+                        "Data_local": "PM/%Y%m%d-%H",
+                        "Hostname": "Server_name"
+                }
+        ]
+}
